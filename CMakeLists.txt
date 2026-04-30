@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.12.0)
 project(SDL3Project)
 
-# By configuring CMake with -DDOWNLOAD_DEPENDENCIES=ON/OFF,
-# users can choose between downloading dependencies or using system libraries
 option(DOWNLOAD_DEPENDENCIES "Download dependencies" TRUE)
 
 if(DOWNLOAD_DEPENDENCIES)
-    # FetchContent downloads and configures dependencies
     include(FetchContent)
     FetchContent_Declare(
         SDL3
@@ -16,30 +13,40 @@ if(DOWNLOAD_DEPENDENCIES)
     )
     FetchContent_MakeAvailable(SDL3)
 else()
-    # find_package looks for already-installed system packages.
-    # Configure with `-DCMAKE_PREFIX_PATH="/path/to/package1;/path/to/package2"`
-    # to add search paths.
     find_package(SDL3 CONFIG REQUIRED)
 endif()
 
 if(ANDROID)
-    # SDL applications need to be built as a shared library
     function(add_executable TARGET)
         add_library(${TARGET} SHARED ${ARGN})
     endfunction()
 endif()
 
+
+file(GLOB SOURCES "src/source/*.cpp")
 add_executable(sdl3project
     src/main_gl.cpp
+    ${SOURCES}
 )
 
-target_link_libraries(sdl3project PRIVATE GLESv2 SDL3::SDL3)
 
-# This is safe to set on all platforms. Otherwise your SDL app will
-#  have a terminal window pop up with it on Windows.
+target_include_directories(sdl3project PRIVATE 
+    include 
+    src
+    src/include
+)
+
+
+find_library(LOG_LIB log)
+
+target_link_libraries(sdl3project PRIVATE 
+    GLESv2 
+    SDL3::SDL3 
+    ${LOG_LIB}
+)
+
 set_property(TARGET sdl3project PROPERTY WIN32_EXECUTABLE TRUE)
 
 if(EMSCRIPTEN)
-    # Create a html webpage
     set_property(TARGET sdl3project PROPERTY SUFFIX ".html")
 endif()

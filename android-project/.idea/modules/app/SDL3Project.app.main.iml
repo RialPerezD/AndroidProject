@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/SDL3-shared/include">
-      <sourceFolder url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/SDL3-shared/include" type="native-header-root" />
-    </content>
     <content url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/SDL3/include">
       <sourceFolder url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/SDL3/include" type="native-header-root" />
     </content>
     <content url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/SDL3-Headers/include">
       <sourceFolder url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/SDL3-Headers/include" type="native-header-root" />
     </content>
+    <content url="file://$MODULE_DIR$/../../../../include">
+      <sourceFolder url="file://$MODULE_DIR$/../../../../include" type="native-header-root" />
+    </content>
     <content url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/Headers/include">
       <sourceFolder url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/Headers/include" type="native-header-root" />
     </content>
     <content url="file://$MODULE_DIR$/../../../../src">
       <sourceFolder url="file://$MODULE_DIR$/../../../../src" type="native-Source-root" />
+    </content>
+    <content url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/SDL3-shared/include">
+      <sourceFolder url="file://$USER_HOME$/.gradle/caches/8.12/transforms/147640e7cccd059147855c7f80a51283/transformed/SDL3-3.4.0/prefab/modules/SDL3-shared/include" type="native-header-root" />
     </content>
   </component>
 </module>

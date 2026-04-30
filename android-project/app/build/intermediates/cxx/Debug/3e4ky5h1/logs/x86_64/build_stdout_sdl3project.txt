@@ -1,3 +1,3 @@
 ninja: Entering directory `C:\Dvd\Dreamland\android-project\app\.cxx\Debug\3e4ky5h1\x86_64'
-[1/2] Building CXX object CMakeFiles/sdl3project.dir/src/main_gl.cpp.o
+[1/2] Building CXX object CMakeFiles/sdl3project.dir/src/source/renderer.cpp.o
 [2/2] Linking CXX shared library ..\..\..\..\build\intermediates\cxx\Debug\3e4ky5h1\obj\x86_64\libsdl3project.so

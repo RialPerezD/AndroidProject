@@ -16,5 +16,5 @@
   --ndk-version ^
   25 ^
   --output ^
-  "C:\\Users\\rialpe\\AppData\\Local\\Temp\\agp-prefab-staging11452317801573183365\\staged-cli-output" ^
+  "C:\\Users\\rialpe\\AppData\\Local\\Temp\\agp-prefab-staging14588245406022908524\\staged-cli-output" ^
   "C:\\Users\\rialpe\\.gradle\\caches\\8.12\\transforms\\147640e7cccd059147855c7f80a51283\\transformed\\SDL3-3.4.0\\prefab"
