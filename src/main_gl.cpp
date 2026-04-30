@@ -1,6 +1,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include "include/renderer.h"
+#include <algorithm>
 
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -15,30 +16,46 @@ int main(int argc, char* argv[]) {
     Renderer renderer;
     renderer.init();
 
+    int w, h;
+    SDL_GetWindowSize(window, &w, &h);
+
+    float ammount = 16.0f;
+    float minDim = (float)std::min(w, h);
+    float cellSizePx = minDim / ammount;
+
+    float cubeWidthNDC = (cellSizePx / (float)w) * 2.0f;
+    float cubeHeightNDC = (cellSizePx / (float)h) * 2.0f;
+
     std::vector<Sprite> listaSprites;
+    GLuint cube = renderer.loadTexture("knight.bmp");
 
-    GLuint cube = renderer.loadTexture("cube.bmp");
+    listaSprites.clear();
 
-    listaSprites.push_back({0.0f, 0.0f, 0.4f, 0.4f, cube});
-    listaSprites.push_back({0.7f, 0.7f, 0.2f, 0.2f, cube});
-    listaSprites.push_back({-0.5f, -0.5f, 0.6f, 0.3f, cube});
+    for (int row = 0; row < ammount; ++row) {
+        for (int col = 0; col < ammount; ++col) {
+            float posX = ((col - (ammount / 2.0f)+0.5f) * cellSizePx) / ((float)w / 2.0f);
+            float posY = -((row - (ammount / 2.0f)+0.5f) * cellSizePx) / ((float)h / 2.0f);
+
+            listaSprites.push_back({posX, posY, cubeWidthNDC, cubeHeightNDC, cube});
+        }
+    }
 
     bool running = true;
     SDL_Event event;
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_EVENT_QUIT) running = false;
-            if (event.type == SDL_EVENT_FINGER_DOWN) {
-            }
         }
-
-        int w, h;
-        SDL_GetWindowSize(window, &w, &h);
 
         renderer.draw(listaSprites, w, h);
 
         SDL_GL_SwapWindow(window);
     }
+
+    renderer.cleanup();
+    SDL_GL_DestroyContext(glContext);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
     return 0;
 }
