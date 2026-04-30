@@ -1,0 +1,17 @@
+org.libsdl.sdl3project:xml/data_extraction_rules = 0x7f070001
+org.libsdl.sdl3project:style/AppTheme = 0x7f060000
+org.libsdl.sdl3project:string/app_name = 0x7f050000
+org.libsdl.sdl3project:mipmap/ic_launcher_round = 0x7f040001
+org.libsdl.sdl3project:mipmap/ic_launcher = 0x7f040000
+org.libsdl.sdl3project:drawable/ic_launcher_foreground = 0x7f030002
+org.libsdl.sdl3project:drawable/$ic_launcher_foreground__0 = 0x7f030000
+org.libsdl.sdl3project:drawable/ic_launcher_background = 0x7f030001
+org.libsdl.sdl3project:dimen/fab_margin = 0x7f020000
+org.libsdl.sdl3project:color/white = 0x7f010006
+org.libsdl.sdl3project:color/teal_700 = 0x7f010005
+org.libsdl.sdl3project:color/black = 0x7f010000
+org.libsdl.sdl3project:xml/backup_rules = 0x7f070000
+org.libsdl.sdl3project:color/purple_500 = 0x7f010002
+org.libsdl.sdl3project:color/purple_700 = 0x7f010003
+org.libsdl.sdl3project:color/purple_200 = 0x7f010001
+org.libsdl.sdl3project:color/teal_200 = 0x7f010004
