@@ -21,9 +21,12 @@ public:
     int movePlayer(int dx, int dy);
     bool applyGravity();
 
+    int getCurrentLevel(){ return currentLevel; }
+
 private:
-    int size = 16;
     int currentLevel = 1;
+
+    int size = 16;
     int enemyCount = 0;
     std::vector<int> currentCells;
     std::vector<int> ladderLayer;

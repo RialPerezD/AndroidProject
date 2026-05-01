@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
     GLuint texLeafs  = renderer.loadTexture("leafs.bmp");
     GLuint texMenu   = renderer.loadTexture("menu.bmp");
     GLuint texBack   = renderer.loadTexture("background.bmp");
+    GLuint texReset  = renderer.loadTexture("reset.bmp");
 
     TouchState touch;
     bool needsSpriteUpdate = true;
@@ -52,6 +53,12 @@ int main(int argc, char* argv[]) {
     while (running) {
         int w, h;
         SDL_GetWindowSize(window, &w, &h);
+        float minSide = (float)std::min(w, h);
+
+        float bgW = (minSide / (float)w) * 2.0f;
+        float bgH = (minSide / (float)h) * 2.0f;
+        float bgRight = bgW / 2.0f;
+        float bgTop = bgH / 2.0f;
 
         int playerState = 0;
 
@@ -68,14 +75,11 @@ int main(int argc, char* argv[]) {
                         clickX = event.button.x / (float)w; clickY = event.button.y / (float)h;
                     }
 
-                    float minDim = (float)std::min(w, h);
-                    float menuRectW = minDim / (float)w;
-                    float menuRectH = minDim / (float)h;
-                    float menuLeft = (1.0f - menuRectW) / 2.0f;
-                    float menuTop = (1.0f - menuRectH) / 2.0f;
+                    float menuLeft = (1.0f - (minSide / w)) / 2.0f;
+                    float menuTopPos = (1.0f - (minSide / h)) / 2.0f;
 
-                    float localX = (clickX - menuLeft) / menuRectW;
-                    float localY = (clickY - menuTop) / menuRectH;
+                    float localX = (clickX - menuLeft) / (minSide / w);
+                    float localY = (clickY - menuTopPos) / (minSide / h);
 
                     if (localX > 0.34f && localX < 0.66f) {
                         if (localY > 0.67f && localY < 0.75f) {
@@ -90,9 +94,31 @@ int main(int argc, char* argv[]) {
                 }
             }
             else {
-                if (event.type == SDL_EVENT_FINGER_DOWN) {
-                    touch.startX = event.tfinger.x; touch.startY = event.tfinger.y;
-                    touch.isPressed = true;
+                if (event.type == SDL_EVENT_FINGER_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+                    float clickX, clickY;
+                    if (event.type == SDL_EVENT_FINGER_DOWN) {
+                        clickX = event.tfinger.x; clickY = event.tfinger.y;
+                    } else {
+                        clickX = event.button.x / (float)w; clickY = event.button.y / (float)h;
+                    }
+
+                    float gameX = (clickX * 2.0f) - 1.0f;
+                    float gameY = 1.0f - (clickY * 2.0f);
+
+                    float iconSize = 0.15f;
+                    float iconW = (iconSize * minSide) / w;
+                    float iconH = (iconSize * minSide) / h;
+
+                    float resetX = bgRight - (iconW / 2.0f);
+                    float resetY = bgTop - (iconH / 2.0f);
+
+                    if (std::abs(gameX - resetX) < (iconW / 2.0f) && std::abs(gameY - resetY) < (iconH / 2.0f)) {
+                        gameGrid.setLevel(gameGrid.getCurrentLevel());
+                        needsSpriteUpdate = true;
+                    } else if (event.type == SDL_EVENT_FINGER_DOWN) {
+                        touch.startX = event.tfinger.x; touch.startY = event.tfinger.y;
+                        touch.isPressed = true;
+                    }
                 }
                 else if (event.type == SDL_EVENT_FINGER_UP && touch.isPressed) {
                     float dx_f = event.tfinger.x - touch.startX;
@@ -122,6 +148,7 @@ int main(int argc, char* argv[]) {
                 if (event.key.key == SDLK_LEFT) dx = -1;
                 if (event.key.key == SDLK_RIGHT) dx = 1;
                 if (event.key.key == SDLK_ESCAPE) { currentState = MENU; needsSpriteUpdate = true; }
+                if (event.key.key == SDLK_R && currentState == PLAYING) { gameGrid.setLevel(gameGrid.getCurrentLevel()); needsSpriteUpdate = true; }
 
                 if (currentState == PLAYING) {
                     playerState = gameGrid.movePlayer(dx, dy);
@@ -146,15 +173,12 @@ int main(int argc, char* argv[]) {
 
         if (needsSpriteUpdate) {
             listaSprites.clear();
-            float minSide = (float)std::min(w, h);
-            float squareW = (minSide / (float)w) * 2.0f;
-            float squareH = (minSide / (float)h) * 2.0f;
 
             if (currentState == MENU) {
-                listaSprites.push_back({0.0f, 0.0f, squareW, squareH, texMenu});
+                listaSprites.push_back({0.0f, 0.0f, bgW, bgH, texMenu});
             }
             else {
-                listaSprites.push_back({0.0f, 0.0f, squareW, squareH, texBack});
+                listaSprites.push_back({0.0f, 0.0f, bgW, bgH, texBack});
 
                 int gridSize = gameGrid.getSize();
                 float gridDim = (float)gridSize;
@@ -183,6 +207,13 @@ int main(int argc, char* argv[]) {
                         }
                     }
                 }
+
+                float iconScale = 0.15f;
+                float iconW = (iconScale * minSide) / w;
+                float iconH = (iconScale * minSide) / h;
+                float resetX = bgRight - (iconW / 2.0f);
+                float resetY = bgTop - (iconH / 2.0f);
+                listaSprites.push_back({resetX, resetY, iconW, iconH, texReset});
             }
             needsSpriteUpdate = false;
         }
