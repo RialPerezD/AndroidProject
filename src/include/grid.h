@@ -11,20 +11,27 @@ public:
     ~Grid();
 
     void loadAllLevels();
-    void setLevel(int levelNumber);
+    bool setLevel(int levelNumber);
 
     int getCell(int x, int y) const;
     void setCell(int x, int y, int value);
+    bool isLadder(int x, int y) const;
     int getSize() const { return size; }
-    bool movePlayer(int dx, int dy);
+
+    int movePlayer(int dx, int dy);
+    bool applyGravity();
 
 private:
     int size = 16;
+    int currentLevel = 1;
+    int enemyCount = 0;
     std::vector<int> currentCells;
+    std::vector<int> ladderLayer;
     std::map<int, std::vector<int>> levelCache;
     int playerX, playerY;
 
     void findAndSetPlayerInitialPosition();
+    void countEnemies();
 };
 
 #endif
