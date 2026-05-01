@@ -13,7 +13,7 @@ Grid::Grid() {
 Grid::~Grid() {}
 
 void Grid::loadAllLevels() {
-    for (int i = 1; i <= 10; ++i) {
+    for (int i = 1; i <= 5; ++i) {
         std::string path = "levels/" + std::to_string(i) + ".txt";
         size_t fileSize;
         void* buffer = SDL_LoadFile(path.c_str(), &fileSize);
@@ -94,8 +94,12 @@ bool Grid::isLadder(int x, int y) const {
 }
 
 int Grid::movePlayer(int dx, int dy) {
+    if (isPlayerFalling) {
+        return 0;
+    }
+
     if (dy < 0 && !isLadder(playerX, playerY)) {
-        return false;
+        return 0;
     }
 
     int nextX = playerX + dx;
@@ -121,9 +125,15 @@ int Grid::movePlayer(int dx, int dy) {
     if (targetCell == 3) {
         int boxNextX = nextX + dx;
         int boxNextY = nextY + dy;
+
         if (getCell(boxNextX, boxNextY) == 0 && !isLadder(boxNextX, boxNextY)) {
             setCell(boxNextX, boxNextY, 3);
-            setCell(nextX, nextY, 0);
+            setCell(playerX, playerY, 0);
+
+            playerX = nextX;
+            playerY = nextY;
+            setCell(playerX, playerY, 2);
+
             return 1;
         }
     }
@@ -133,6 +143,7 @@ int Grid::movePlayer(int dx, int dy) {
 
 bool Grid::applyGravity() {
     bool changed = false;
+    bool playerMovedThisFrame = false;
     for (int row = size - 2; row >= 0; --row) {
         for (int col = 0; col < size; ++col) {
             int cellType = getCell(col, row);
@@ -146,11 +157,14 @@ bool Grid::applyGravity() {
                     if (cellType == 2) {
                         playerX = col;
                         playerY = row + 1;
+                        playerMovedThisFrame = true;
                     }
                     changed = true;
                 }
             }
         }
     }
+
+    isPlayerFalling = playerMovedThisFrame;
     return changed;
 }

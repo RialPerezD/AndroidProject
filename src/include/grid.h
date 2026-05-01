@@ -30,6 +30,8 @@ private:
     std::map<int, std::vector<int>> levelCache;
     int playerX, playerY;
 
+    bool isPlayerFalling = false;
+
     void findAndSetPlayerInitialPosition();
     void countEnemies();
 };

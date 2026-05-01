@@ -106,13 +106,24 @@ int main(int argc, char* argv[]) {
                         if (playerState == 1) needsSpriteUpdate = true;
                     }
                 }
-                if (event.type == SDL_EVENT_KEY_DOWN) {
-                    int dx = 0, dy = 0;
-                    if (event.key.key == SDLK_UP) dy = -1;
-                    if (event.key.key == SDLK_DOWN) dy = 1;
-                    if (event.key.key == SDLK_LEFT) dx = -1;
-                    if (event.key.key == SDLK_RIGHT) dx = 1;
-                    if (event.key.key == SDLK_ESCAPE) { currentState = MENU; needsSpriteUpdate = true; }
+            }
+
+            if (event.type == SDL_EVENT_KEY_DOWN) {
+                if (event.key.key >= SDLK_1 && event.key.key <= SDLK_9) {
+                    int targetLevel = event.key.key - SDLK_0;
+                    gameGrid.setLevel(targetLevel);
+                    currentState = PLAYING;
+                    needsSpriteUpdate = true;
+                }
+
+                int dx = 0, dy = 0;
+                if (event.key.key == SDLK_UP) dy = -1;
+                if (event.key.key == SDLK_DOWN) dy = 1;
+                if (event.key.key == SDLK_LEFT) dx = -1;
+                if (event.key.key == SDLK_RIGHT) dx = 1;
+                if (event.key.key == SDLK_ESCAPE) { currentState = MENU; needsSpriteUpdate = true; }
+
+                if (currentState == PLAYING) {
                     playerState = gameGrid.movePlayer(dx, dy);
                     if ((dx != 0 || dy != 0) && playerState == 1) needsSpriteUpdate = true;
                 }
