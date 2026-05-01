@@ -26,7 +26,8 @@ endif()
 file(GLOB SOURCES "src/source/*.cpp")
 add_executable(sdl3project
     src/main_gl.cpp
-    ${SOURCES}
+    src/source/renderer.cpp
+    src/source/grid.cpp
 )
 
 

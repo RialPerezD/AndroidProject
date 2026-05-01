@@ -4,7 +4,7 @@
             "outputFile": "org.libsdl.sdl3project.app-mergeDebugResources-2:/values-w1240dp-v13/values-w1240dp-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Dvd\\Dreamland\\android-project\\app\\src\\main\\res\\values-w1240dp\\dimens.xml",
+                    "source": "D:\\Clase\\AndroidProject\\android-project\\app\\src\\main\\res\\values-w1240dp\\dimens.xml",
                     "from": {
                         "startLines": "1",
                         "startColumns": "4",

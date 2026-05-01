@@ -1,0 +1,48 @@
+# Proyectos de Android Studio y Gradle
+# ------------------------------------
+
+# Archivos de compilación y binarios
+**/build/
+*.apk
+*.aar
+*.ap_
+*.dex
+*.class
+
+# Archivos específicos de Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+.navigation/
+captures/
+externalNativeBuild/
+.cxx/
+.externalNativeBuild/
+
+# Archivos de configuración local (CONTIENEN RUTAS PRIVADAS Y LLAVES)
+local.properties
+.gradle/
+gradle-app.setting
+.DS_Store
+
+# Archivos de logs
+*.log
+
+# Archivos de respaldo de editores y SO
+*~
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
+
+# Secretos y llaves (IMPORTANTE: No subir tus .jks o .keystore)
+*.jks
+*.keystore
+*.google_play_track
+
+# Google Services (opcional: subir si no contiene keys privadas sensibles)
+# google-services.json
+
+# Archivos temporales de pruebas
+.pico/
