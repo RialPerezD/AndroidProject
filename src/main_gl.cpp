@@ -15,6 +15,37 @@ struct TouchState {
     const float minSwipeDist = 0.15f;
 };
 
+struct Joystick {
+    float centerX = 0.65f;
+    float centerY = -0.6f;
+    float radius = 0.2f;
+    float knobX = 0.0f;
+    float knobY = 0.0f;
+    bool active = false;
+    Uint64 lastMoveTime = 0;
+    const Uint64 moveDelay = 200;
+
+    void updateKnob(float touchX, float touchY, float bgW, float bgH) {
+        float dx = touchX - centerX;
+        float dy = touchY - centerY;
+        float dist = std::sqrt(dx * dx + dy * dy);
+
+        if (dist > radius) {
+            knobX = (dx / dist) * radius;
+            knobY = (dy / dist) * radius;
+        } else {
+            knobX = dx;
+            knobY = dy;
+        }
+    }
+
+    void reset() {
+        knobX = 0.0f;
+        knobY = 0.0f;
+        active = false;
+    }
+};
+
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -41,8 +72,11 @@ int main(int argc, char* argv[]) {
     GLuint texMenu   = renderer.loadTexture("menu.bmp");
     GLuint texBack   = renderer.loadTexture("background.bmp");
     GLuint texReset  = renderer.loadTexture("reset.bmp");
+    GLuint texJoyBase = renderer.loadTexture("joy-outer.bmp");
+    GLuint texJoyKnob = renderer.loadTexture("joy-inner.bmp");
 
     TouchState touch;
+    Joystick joy;
     bool needsSpriteUpdate = true;
     bool running = true;
     SDL_Event event;
@@ -94,43 +128,45 @@ int main(int argc, char* argv[]) {
                 }
             }
             else {
-                if (event.type == SDL_EVENT_FINGER_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+                if (event.type == SDL_EVENT_FINGER_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_DOWN ||
+                    event.type == SDL_EVENT_FINGER_MOTION || event.type == SDL_EVENT_MOUSE_MOTION) {
+
                     float clickX, clickY;
-                    if (event.type == SDL_EVENT_FINGER_DOWN) {
-                        clickX = event.tfinger.x; clickY = event.tfinger.y;
+                    bool isDown = (event.type == SDL_EVENT_FINGER_DOWN || event.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
+
+                    if (event.type == SDL_EVENT_FINGER_DOWN || event.type == SDL_EVENT_FINGER_MOTION) {
+                        clickX = (event.tfinger.x * 2.0f) - 1.0f;
+                        clickY = 1.0f - (event.tfinger.y * 2.0f);
                     } else {
-                        clickX = event.button.x / (float)w; clickY = event.button.y / (float)h;
+                        clickX = (event.button.x / (float)w * 2.0f) - 1.0f;
+                        clickY = 1.0f - (event.button.y / (float)h * 2.0f);
                     }
 
-                    float gameX = (clickX * 2.0f) - 1.0f;
-                    float gameY = 1.0f - (clickY * 2.0f);
+                    float distToJoy = std::sqrt(std::pow(clickX - joy.centerX, 2) + std::pow(clickY - joy.centerY, 2));
 
-                    float iconSize = 0.15f;
-                    float iconW = (iconSize * minSide) / w;
-                    float iconH = (iconSize * minSide) / h;
+                    if (isDown && distToJoy < joy.radius * 2.0f) {
+                        joy.active = true;
+                    }
 
-                    float resetX = bgRight - (iconW / 2.0f);
-                    float resetY = bgTop - (iconH / 2.0f);
-
-                    if (std::abs(gameX - resetX) < (iconW / 2.0f) && std::abs(gameY - resetY) < (iconH / 2.0f)) {
-                        gameGrid.setLevel(gameGrid.getCurrentLevel());
+                    if (joy.active) {
+                        joy.updateKnob(clickX, clickY, bgW, bgH);
                         needsSpriteUpdate = true;
-                    } else if (event.type == SDL_EVENT_FINGER_DOWN) {
-                        touch.startX = event.tfinger.x; touch.startY = event.tfinger.y;
-                        touch.isPressed = true;
+                    } else if (isDown) {
+                        float iconSize = 0.15f;
+                        float iconW = (iconSize * minSide) / w;
+                        float iconH = (iconSize * minSide) / h;
+                        float resetX = bgRight - (iconW / 2.0f);
+                        float resetY = bgTop - (iconH / 2.0f);
+
+                        if (std::abs(clickX - resetX) < (iconW / 2.0f) && std::abs(clickY - resetY) < (iconH / 2.0f)) {
+                            gameGrid.setLevel(gameGrid.getCurrentLevel());
+                            needsSpriteUpdate = true;
+                        }
                     }
                 }
-                else if (event.type == SDL_EVENT_FINGER_UP && touch.isPressed) {
-                    float dx_f = event.tfinger.x - touch.startX;
-                    float dy_f = event.tfinger.y - touch.startY;
-                    touch.isPressed = false;
-                    int dx = 0, dy = 0;
-                    if (std::abs(dx_f) > touch.minSwipeDist || std::abs(dy_f) > touch.minSwipeDist) {
-                        if (std::abs(dx_f) > std::abs(dy_f)) dx = (dx_f > 0) ? 1 : -1;
-                        else dy = (dy_f > 0) ? 1 : -1;
-                        playerState = gameGrid.movePlayer(dx, dy);
-                        if (playerState == 1) needsSpriteUpdate = true;
-                    }
+                else if (event.type == SDL_EVENT_FINGER_UP || event.type == SDL_EVENT_MOUSE_BUTTON_UP) {
+                    joy.reset();
+                    needsSpriteUpdate = true;
                 }
             }
 
@@ -153,6 +189,21 @@ int main(int argc, char* argv[]) {
                 if (currentState == PLAYING) {
                     playerState = gameGrid.movePlayer(dx, dy);
                     if ((dx != 0 || dy != 0) && playerState == 1) needsSpriteUpdate = true;
+                }
+            }
+        }
+
+        if (currentState == PLAYING && joy.active) {
+            Uint64 now = SDL_GetTicks();
+            if (now - joy.lastMoveTime > joy.moveDelay) {
+                int dx = 0, dy = 0;
+                if (std::abs(joy.knobX) > joy.radius * 0.5f || std::abs(joy.knobY) > joy.radius * 0.5f) {
+                    if (std::abs(joy.knobX) > std::abs(joy.knobY)) dx = (joy.knobX > 0) ? 1 : -1;
+                    else dy = (joy.knobY > 0) ? -1 : 1;
+
+                    playerState = gameGrid.movePlayer(dx, dy);
+                    if (playerState == 1) needsSpriteUpdate = true;
+                    joy.lastMoveTime = now;
                 }
             }
         }
@@ -214,6 +265,15 @@ int main(int argc, char* argv[]) {
                 float resetX = bgRight - (iconW / 2.0f);
                 float resetY = bgTop - (iconH / 2.0f);
                 listaSprites.push_back({resetX, resetY, iconW, iconH, texReset});
+
+                float joyBaseW = (joy.radius * 2.0f * minSide) / w;
+                float joyBaseH = (joy.radius * 2.0f * minSide) / h;
+                listaSprites.push_back({joy.centerX, joy.centerY, joyBaseW, joyBaseH, texJoyBase});
+
+                float knobSize = joy.radius * 0.8f;
+                float knobW = (knobSize * 2.0f * minSide) / w;
+                float knobH = (knobSize * 2.0f * minSide) / h;
+                listaSprites.push_back({joy.centerX + joy.knobX, joy.centerY + joy.knobY, knobW, knobH, texJoyKnob});
             }
             needsSpriteUpdate = false;
         }
